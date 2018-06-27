@@ -39,5 +39,7 @@
   "peerDependencies": {
     "backbone": "^1.3.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "path-to-regexp": "^2.2.1"
+  }
 }
