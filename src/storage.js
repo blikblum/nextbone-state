@@ -1,5 +1,4 @@
 import Backbone from 'backbone'
-import Metal from 'backbone-metal'
 
 /**
  * A container for all the models of a particular type. Manages requests to your
@@ -29,31 +28,30 @@ import Metal from 'backbone-metal'
  * @public
  * @class Storage
  */
-var Storage = Backbone.Storage = Metal.Class.extend({
+class Storage {
 
   /**
    * The model class to store.
    * @type {Backbone.Model}
    */
-  model: Backbone.Model,
+  static model = Backbone.Model
 
   /**
    * The collection class to store.
    * @type {Backbone.Collection}
    */
-  collection: Backbone.Collection,
+  static collection = Backbone.Collection
 
   /**
    * @public
    * @constructs Storage
    */
   constructor () {
-    this.records = new this.collection()
+    this.records = new this.constructor.collection()
     this.listenToOnce(this.records, 'sync', () => {
       this._hasSynced = true
     })
-    this._super.apply(this, arguments)
-  },
+  }
 
   /**
    * Find a specific model from the store or fetch it from the server and insert
@@ -78,7 +76,7 @@ var Storage = Backbone.Storage = Metal.Class.extend({
         return this.insert(model)
       })
     }
-  },
+  }
 
   /**
    * Find all the models in the store or fetch them from the server if they
@@ -101,7 +99,7 @@ var Storage = Backbone.Storage = Metal.Class.extend({
         return this.records
       })
     }
-  },
+  }
 
   /**
    * Save a model to the server.
@@ -122,7 +120,7 @@ var Storage = Backbone.Storage = Metal.Class.extend({
       }
       return model
     })
-  },
+  }
 
   /**
    * Insert a model into the store.
@@ -137,7 +135,7 @@ var Storage = Backbone.Storage = Metal.Class.extend({
   insert (model) {
     model = this.records.add(model, { merge: true })
     return Promise.resolve(model)
-  },
+  }
 
   /**
    * Ensure that we have a real model from an id, object, or model.
@@ -150,14 +148,17 @@ var Storage = Backbone.Storage = Metal.Class.extend({
    * @returns {Backbone.Model} - The model.
    */
   _ensureModel (model) {
-    if (model instanceof this.model) {
+    const ModelClass = this.constructor.model
+    if (model instanceof ModelClass) {
       return model
     } else if (typeof model === 'object') {
-      return new this.model(model)
+      return new ModelClass(model)
     } else {
-      return new this.model({ id: model })
+      return new ModelClass({ id: model })
     }
   }
-})
+}
+
+Object.assign(Storage.prototype, Backbone.Events)
 
 export default Storage

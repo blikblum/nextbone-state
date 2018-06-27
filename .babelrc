@@ -8,10 +8,13 @@
             "ie 11"
           ]
         },
-        "modules": false
+        "modules": false,
+        "loose": true,
+        "exclude": ["babel-plugin-transform-es2015-typeof-symbol"]
       }
     ]
   ],
+  "plugins": ["transform-class-properties"],
   "env": {
     "test": {
       "presets": [
@@ -20,7 +23,8 @@
           {
             "targets": {
               "node": "current"
-            }
+            },
+            "loose": true
           }
         ]
       ]
