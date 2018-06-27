@@ -1,6 +1,8 @@
 import Backbone from 'backbone';
 import Metal from 'backbone-metal';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 /**
  * A container for all the models of a particular type. Manages requests to your
  * server.
@@ -47,13 +49,16 @@ var Storage = Backbone.Storage = Metal.Class.extend({
    * @public
    * @constructs Storage
    */
-  constructor() {
+  constructor: function constructor() {
+    var _this = this;
+
     this.records = new this.collection();
-    this.listenToOnce(this.records, 'sync', () => {
-      this._hasSynced = true;
+    this.listenToOnce(this.records, 'sync', function () {
+      _this._hasSynced = true;
     });
     this._super.apply(this, arguments);
   },
+
 
   /**
    * Find a specific model from the store or fetch it from the server and insert
@@ -67,18 +72,23 @@ var Storage = Backbone.Storage = Metal.Class.extend({
    * @param {Boolean} forceFetch - Force fetch model from server.
    * @returns {Promise} - A promise that will resolve to the model.
    */
-  find(model, forceFetch = false) {
-    let record = this.records.get(model);
+  find: function find(model) {
+    var _this2 = this;
+
+    var forceFetch = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    var record = this.records.get(model);
 
     if (record && !forceFetch) {
       return Promise.resolve(record);
     } else {
       model = this._ensureModel(model);
-      return Promise.resolve(model.fetch()).then(() => {
-        return this.insert(model);
+      return Promise.resolve(model.fetch()).then(function () {
+        return _this2.insert(model);
       });
     }
   },
+
 
   /**
    * Find all the models in the store or fetch them from the server if they
@@ -93,15 +103,21 @@ var Storage = Backbone.Storage = Metal.Class.extend({
    * @param {Boolean} forceFetch - Force fetch model from server.
    * @returns {Promise} - A promise that will resolve to the entire collection.
    */
-  findAll(options = {}, forceFetch = false) {
+  findAll: function findAll() {
+    var _this3 = this;
+
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var forceFetch = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     if (this._hasSynced && !forceFetch) {
       return Promise.resolve(this.records);
     } else {
-      return Promise.resolve(this.records.fetch(options)).then(() => {
-        return this.records;
+      return Promise.resolve(this.records.fetch(options)).then(function () {
+        return _this3.records;
       });
     }
   },
+
 
   /**
    * Save a model to the server.
@@ -113,16 +129,19 @@ var Storage = Backbone.Storage = Metal.Class.extend({
    * @param {Number|String|Object|Backbone.Model} model - The model to save
    * @returns {Promise} - A promise that will resolve to the saved model.
    */
-  save(model) {
-    let record = this.records.get(model);
+  save: function save(model) {
+    var _this4 = this;
+
+    var record = this.records.get(model);
     model = record || this._ensureModel(model);
-    return Promise.resolve(model.save()).then(() => {
+    return Promise.resolve(model.save()).then(function () {
       if (!record) {
-        this.insert(model);
+        _this4.insert(model);
       }
       return model;
     });
   },
+
 
   /**
    * Insert a model into the store.
@@ -134,10 +153,11 @@ var Storage = Backbone.Storage = Metal.Class.extend({
    * @params {Object|Backbone.Model} - The model to add.
    * @returns {Promise} - A promise that will resolve to the added model.
    */
-  insert(model) {
+  insert: function insert(model) {
     model = this.records.add(model, { merge: true });
     return Promise.resolve(model);
   },
+
 
   /**
    * Ensure that we have a real model from an id, object, or model.
@@ -149,10 +169,10 @@ var Storage = Backbone.Storage = Metal.Class.extend({
    * @params {Number|String|Object|Backbone.Model} - An id, object, or model.
    * @returns {Backbone.Model} - The model.
    */
-  _ensureModel(model) {
+  _ensureModel: function _ensureModel(model) {
     if (model instanceof this.model) {
       return model;
-    } else if (typeof model === 'object') {
+    } else if ((typeof model === 'undefined' ? 'undefined' : _typeof(model)) === 'object') {
       return new this.model(model);
     } else {
       return new this.model({ id: model });
@@ -160,4 +180,5 @@ var Storage = Backbone.Storage = Metal.Class.extend({
   }
 });
 
-export default Storage;
+export { Storage };
+//# sourceMappingURL=index.esm.js.map
