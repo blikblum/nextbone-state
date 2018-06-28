@@ -3,7 +3,7 @@ import Backbone from 'backbone'
 /**
  * A container for all the models of a particular type. Manages requests to your
  * server.
- *
+ * Original author: James Kyle <me@thejameskyle.com>
  * @example
  * var BookStorage = Storage.extend({
  *   model: Book,
