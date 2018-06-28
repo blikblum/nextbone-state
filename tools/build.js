@@ -12,9 +12,9 @@ let dependencies = Object.assign({}, pkg.dependencies || {}, pkg.peerDependencie
 // Clean up the output directory
 promise = promise.then(() => del(['dist/*']))
 
-const outputName = 'index'
+const outputName = 'backbone.state'
 
-const exportName = 'Backbone.Storage'
+const exportName = 'Backbone.State'
 
 const formats = ['es', 'umd']
 
@@ -32,8 +32,7 @@ formats.forEach((format) => {
     sourcemap: true,
     name: format === 'umd' ? exportName : undefined,
     globals: {
-      backbone: 'Backbone',
-      'backbone-metal': 'Backbone.Metal'
+      backbone: 'Backbone'
     }
   })))
 })
