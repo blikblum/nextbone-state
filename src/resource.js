@@ -1,4 +1,4 @@
-import { Model } from 'backbone'
+import { Model, Collection } from 'backbone'
 import pathToRegexp from 'path-to-regexp'
 
 function getResourcePath (resourceDef, params = {}, resourceId) {
@@ -52,12 +52,24 @@ export function createResourceSync (originalSync) {
           method = 'update'
         }
       }
+      options = options ? Object.assign({}, options) : {}
       options.url = client.baseUrl + getResourcePath(resourceDef, model.params, resourceId)
     }
     return originalSync(method, model, options)
   }
 }
 
-export const ResourceModel = Model.extend({
+export const paramsMixin = {
+  clearParams () {
+    this.params && (this.params = {})
+  },
 
-})
+  setParam (name, value) {
+    this.params || (this.params = {})
+    this.params[name] = value
+  }
+}
+
+export const ResourceModel = Model.extend(paramsMixin)
+
+export const ResourceCollection = Collection.extend(paramsMixin)
