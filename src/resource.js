@@ -14,12 +14,12 @@ function getResourcePath (resourceDef, params = {}, resourceId) {
         throw new Error(`Param ${paramDef.name} is not defined for resource ${resourceDef.name}`)
       }
       if (isQuery && paramValue != null) {
-        query += `${query ? '&' : ''}${paramDef.name}=${paramValue}`
+        query += `${query ? '&' : ''}${encodeURIComponent(paramDef.name)}=${encodeURIComponent(paramValue)}`
       }
     })
   }
   if (resourceId) {
-    result += `/${resourceId}`
+    result = result.replace(/[^/]$/, '$&/') + encodeURIComponent(resourceId)
   }
   if (query) {
     result += `?${query}`
