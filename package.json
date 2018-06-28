@@ -1,8 +1,10 @@
 {
   "name": "backbone.storage",
-  "version": "0.2.1",
-  "description": "A simple storage class for Backbone Models and Collections.",
+  "version": "0.3.0",
+  "description": "State classes for Backbone Models and Collections.",
   "main": "dist/backbone.state.js",
+  "module": "dist/backbone.state.esm.js",
+  "sideEffects": false,
   "scripts": {
     "test": "jest",
     "build": "node tools/build"
@@ -18,7 +20,7 @@
     "model",
     "collection"
   ],
-  "author": "James Kyle <me@thejameskyle.com>",
+  "author": "Luiz Américo Pereira Câmara",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/blikblum/backbone.state/issues"
