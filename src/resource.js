@@ -35,37 +35,24 @@ function findResourceDef (client, resource) {
   return result
 }
 
-function getUrlForModel (model) {
-  let resourceId
-  const client = model.resourceClient || (model.collection || model.collection.resourceClient)
-  if (!client) {
-    throw new Error(`resourceClient not defined for ${model.cid}`)
-  }
-  const resourceDef = findResourceDef(client, model.resource)
-  const idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute
-  if (idAttribute) {
-    resourceId = model.get(idAttribute)
-  }
-  return client.baseUrl + getResourcePath(resourceDef, model.params, resourceId)
-}
-
-function getUrlForCollection (collection) {
-  const client = collection.resourceClient
-  if (!client) {
-    throw new Error(`resourceClient not defined for ${collection.cid}`)
-  }
-  const resourceDef = findResourceDef(client, collection.resource)
-  return client.baseUrl + getResourcePath(resourceDef, collection.params)
-}
-
 export function createResourceSync (originalSync) {
   return function resourceSync (method, model, options) {
     if (model.resource) {
-      if (model instanceof Model) {
-        options.url = getUrlForModel(model)
-      } else {
-        options.url = getUrlForCollection(model)
+      let resourceId
+      const client = model.resourceClient || (model.collection && model.collection.resourceClient)
+      if (!client) {
+        throw new Error(`resourceClient not defined for ${model.cid}`)
       }
+      const resourceDef = findResourceDef(client, model.resource)
+      if (model instanceof Model) {
+        const idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute
+        if (idAttribute) {
+          resourceId = model.get(idAttribute)
+        } else if (method === 'create') {
+          method = 'update'
+        }
+      }
+      options.url = client.baseUrl + getResourcePath(resourceDef, model.params, resourceId)
     }
     return originalSync(method, model, options)
   }
