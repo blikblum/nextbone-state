@@ -36,12 +36,26 @@ function findResourceDef (client, resource) {
 }
 
 function getUrlForModel (model) {
+  let resourceId
   const client = model.resourceClient || (model.collection || model.collection.resourceClient)
   if (!client) {
     throw new Error(`resourceClient not defined for ${model.cid}`)
   }
   const resourceDef = findResourceDef(client, model.resource)
-  return client.baseUrl + getResourcePath(resourceDef, model.params)
+  const idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute
+  if (idAttribute) {
+    resourceId = model.get(idAttribute)
+  }
+  return client.baseUrl + getResourcePath(resourceDef, model.params, resourceId)
+}
+
+function getUrlForCollection (collection) {
+  const client = collection.resourceClient
+  if (!client) {
+    throw new Error(`resourceClient not defined for ${collection.cid}`)
+  }
+  const resourceDef = findResourceDef(client, collection.resource)
+  return client.baseUrl + getResourcePath(resourceDef, collection.params)
 }
 
 export function createResourceSync (originalSync) {
@@ -50,7 +64,7 @@ export function createResourceSync (originalSync) {
       if (model instanceof Model) {
         options.url = getUrlForModel(model)
       } else {
-
+        options.url = getUrlForCollection(model)
       }
     }
     return originalSync(method, model, options)
