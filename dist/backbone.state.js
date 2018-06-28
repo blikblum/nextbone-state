@@ -1,10 +1,88 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('backbone')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'backbone'], factory) :
-  (factory((global.Backbone = global.Backbone || {}, global.Backbone.Storage = {}),global.Backbone));
-}(this, (function (exports,Backbone) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('backbone'), require('path-to-regexp')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'backbone', 'path-to-regexp'], factory) :
+  (factory((global.Backbone = global.Backbone || {}, global.Backbone.State = {}),global.Backbone,null));
+}(this, (function (exports,Backbone,pathToRegexp) { 'use strict';
 
-  Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
+  var Backbone__default = 'default' in Backbone ? Backbone['default'] : Backbone;
+  pathToRegexp = pathToRegexp && pathToRegexp.hasOwnProperty('default') ? pathToRegexp['default'] : pathToRegexp;
+
+  function getResourcePath(resourceDef) {
+    var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var resourceId = arguments[2];
+
+    var toPath = pathToRegexp.compile(resourceDef.path);
+    var query = '';
+    var result = toPath(params);
+    if (resourceDef.params) {
+      resourceDef.params.forEach(function (paramDef) {
+        var paramValue = params[paramDef.name];
+        var isQuery = paramDef.location === 'query';
+        var isRequired = typeof paramDef.required === 'undefined' && !isQuery || paramDef.required === true;
+        if (isRequired && paramValue == null) {
+          throw new Error('Param ' + paramDef.name + ' is not defined for resource ' + resourceDef.name);
+        }
+        if (isQuery && paramValue != null) {
+          query += '' + (query ? '&' : '') + encodeURIComponent(paramDef.name) + '=' + encodeURIComponent(paramValue);
+        }
+      });
+    }
+    if (resourceId) {
+      result = result.replace(/[^/]$/, '$&/') + encodeURIComponent(resourceId);
+    }
+    if (query) {
+      result += '?' + query;
+    }
+    return result;
+  }
+
+  function findResourceDef(client, resource) {
+    var result = client.resourceDefs.find(function (def) {
+      return def.name === resource;
+    });
+    if (!result) {
+      throw new Error('Unable to find resource definition for ' + resource);
+    }
+    return result;
+  }
+
+  function createResourceSync(originalSync) {
+    return function resourceSync(method, model, options) {
+      if (model.resource) {
+        var resourceId = void 0;
+        var client = model.resourceClient || model.collection && model.collection.resourceClient;
+        if (!client) {
+          throw new Error('resourceClient not defined for ' + model.cid);
+        }
+        var resourceDef = findResourceDef(client, model.resource);
+        if (model instanceof Backbone.Model) {
+          var idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute;
+          if (idAttribute) {
+            resourceId = model.get(idAttribute);
+          } else if (method === 'create') {
+            method = 'update';
+          }
+        }
+        options = options ? Object.assign({}, options) : {};
+        options.url = client.baseUrl + getResourcePath(resourceDef, model.params, resourceId);
+      }
+      return originalSync(method, model, options);
+    };
+  }
+
+  var paramsMixin = {
+    clearParams: function clearParams() {
+      this.params && (this.params = {});
+    },
+    setParam: function setParam(name, value) {
+      this.params || (this.params = {});
+      this.params[name] = value;
+    }
+  };
+
+  var ResourceModel = Backbone.Model.extend(paramsMixin);
+
+  var ResourceCollection = Backbone.Collection.extend(paramsMixin);
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -195,15 +273,19 @@
     return Storage;
   }();
 
-  Storage.model = Backbone.Model;
-  Storage.collection = Backbone.Collection;
+  Storage.model = Backbone__default.Model;
+  Storage.collection = Backbone__default.Collection;
 
 
-  Object.assign(Storage.prototype, Backbone.Events);
+  Object.assign(Storage.prototype, Backbone__default.Events);
 
+  exports.createResourceSync = createResourceSync;
+  exports.paramsMixin = paramsMixin;
+  exports.ResourceCollection = ResourceCollection;
+  exports.ResourceModel = ResourceModel;
   exports.Storage = Storage;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=backbone.state.js.map
