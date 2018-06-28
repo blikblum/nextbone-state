@@ -1,5 +1,5 @@
 {
-  "name": "backbone.storage",
+  "name": "backbone.state",
   "version": "0.3.0",
   "description": "State classes for Backbone Models and Collections.",
   "main": "dist/backbone.state.js",
