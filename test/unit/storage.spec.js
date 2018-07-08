@@ -166,6 +166,8 @@ describe('Storage', () => {
       testContext.storage = new Backbone.Storage()
       testContext.model1 = new Backbone.Model({ id: 1 })
       testContext.model2 = new Backbone.Model({ id: 2 })
+      testContext.model1Clone = testContext.model1.clone()
+      testContext.model1Clone.set('some', 'value')
 
       testContext.saveSpy = jest.spyOn(Backbone.Model.prototype, 'save').mockImplementation(() => null)
 
@@ -198,11 +200,12 @@ describe('Storage', () => {
     })
 
     describe('by object', () => {
-      test('should save an existing model', () => {
-        return testContext.storage.save({ id: 1 }).then(function (model) {
+      test('should save and update an existing model', () => {
+        const obj = { id: 1, some: 'value' }
+        return testContext.storage.save(obj).then(function (model) {
           expect(model).toBeInstanceOf(Backbone.Model)
           expect(model.id).toBe(1)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalled()
+          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(obj)
         })
       })
 
@@ -229,6 +232,13 @@ describe('Storage', () => {
           expect(model).toBe(testContext.model2)
           expect(Backbone.Model.prototype.save).toHaveBeenCalled()
           expect(testContext.storage.records.get(2)).toBe(model)
+        })
+      })
+
+      test('should update and save an existing model which matches the passed one', () => {
+        return testContext.storage.save(testContext.model1Clone).then(function (model) {
+          expect(model).toBe(testContext.model1)
+          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(testContext.model1Clone.attributes)
         })
       })
     })

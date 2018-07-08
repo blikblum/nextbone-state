@@ -112,9 +112,17 @@ class Storage {
    * @returns {Promise} - A promise that will resolve to the saved model.
    */
   save (model) {
+    let attributes
     let record = this.records.get(model)
-    model = record || this._ensureModel(model)
-    return Promise.resolve(model.save()).then(() => {
+    if (record) {
+      if (typeof model === 'object' && record !== model) {
+        attributes = model instanceof this.constructor.model ? model.attributes : model
+      }
+      model = record
+    } else {
+      model = this._ensureModel(model)
+    }
+    return Promise.resolve(model.save(attributes)).then(() => {
       if (!record) {
         this.insert(model)
       }
