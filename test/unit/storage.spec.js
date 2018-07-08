@@ -180,6 +180,13 @@ describe('Storage', () => {
       })
     })
 
+    test('should pass options to Model.save', () => {
+      const options = { patch: true }
+      return testContext.storage.save(1, options).then(function () {
+        expect(testContext.saveSpy).toHaveBeenCalledWith(undefined, options)
+      })
+    })
+
     describe('by id', () => {
       test('should save an existing model', () => {
         return testContext.storage.save(1).then(function (model) {
@@ -205,7 +212,7 @@ describe('Storage', () => {
         return testContext.storage.save(obj).then(function (model) {
           expect(model).toBeInstanceOf(Backbone.Model)
           expect(model.id).toBe(1)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(obj)
+          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(obj, undefined)
         })
       })
 
@@ -238,7 +245,7 @@ describe('Storage', () => {
       test('should update and save an existing model which matches the passed one', () => {
         return testContext.storage.save(testContext.model1Clone).then(function (model) {
           expect(model).toBe(testContext.model1)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(testContext.model1Clone.attributes)
+          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(testContext.model1Clone.attributes, undefined)
         })
       })
     })

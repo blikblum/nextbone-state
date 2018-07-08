@@ -111,7 +111,7 @@ class Storage {
    * @param {Number|String|Object|Backbone.Model} model - The model to save
    * @returns {Promise} - A promise that will resolve to the saved model.
    */
-  save (model) {
+  save (model, options) {
     let attributes
     let record = this.records.get(model)
     if (record) {
@@ -122,7 +122,7 @@ class Storage {
     } else {
       model = this._ensureModel(model)
     }
-    return Promise.resolve(model.save(attributes)).then(() => {
+    return Promise.resolve(model.save(attributes, options)).then(() => {
       if (!record) {
         this.insert(model)
       }
