@@ -83,7 +83,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  * A container for all the models of a particular type. Manages requests to your
  * server.
- *
+ * Original author: James Kyle <me@thejameskyle.com>
  * @example
  * var BookStorage = Storage.extend({
  *   model: Book,
@@ -211,12 +211,20 @@ var Storage = function () {
    */
 
 
-  Storage.prototype.save = function save(model) {
+  Storage.prototype.save = function save(model, options) {
     var _this4 = this;
 
+    var attributes = void 0;
     var record = this.records.get(model);
-    model = record || this._ensureModel(model);
-    return Promise.resolve(model.save()).then(function () {
+    if (record) {
+      if (typeof model === 'object' && record !== model) {
+        attributes = model instanceof this.constructor.model ? model.attributes : model;
+      }
+      model = record;
+    } else {
+      model = this._ensureModel(model);
+    }
+    return Promise.resolve(model.save(attributes, options)).then(function () {
       if (!record) {
         _this4.insert(model);
       }
