@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { ResourceModel, createResourceSync } from '../../src/index'
+import { createResourceSync } from '../../src/index'
 import { Model, Collection } from 'nextbone'
 
 const resourceDefs = [
@@ -75,8 +75,10 @@ describe('createResourceSync', () => {
   let resourceSync
   let model
   let options
+  let TestModel
 
   beforeEach(() => {
+    TestModel = class extends Model {}
     originalSyncSpy = jest.fn()
     resourceSync = createResourceSync(originalSyncSpy)
   })
@@ -95,8 +97,8 @@ describe('createResourceSync', () => {
 
   describe('with an empty model', () => {
     beforeEach(() => {
-      model = new Model()
-      model.resourceClient = resourceClient
+      model = new TestModel()
+      TestModel.resourceClient = resourceClient
       options = {}
     })
 
@@ -110,7 +112,7 @@ describe('createResourceSync', () => {
       `
     cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
-      model.resource = resource
+      TestModel.resource = resource
       model.params = params
       resourceSync('read', model, options)
       expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
@@ -119,8 +121,8 @@ describe('createResourceSync', () => {
 
   describe('with a initialized model', () => {
     beforeEach(() => {
-      model = new Model({ id: 10 })
-      model.resourceClient = resourceClient
+      model = new TestModel({ id: 10 })
+      TestModel.resourceClient = resourceClient
       options = {}
     })
 
@@ -133,7 +135,7 @@ describe('createResourceSync', () => {
       `
     cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
-      model.resource = resource
+      TestModel.resource = resource
       model.params = params
       resourceSync('read', model, options)
       expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
@@ -142,9 +144,11 @@ describe('createResourceSync', () => {
 
   describe('with a collection', () => {
     let collection
+    let TestCollection
     beforeEach(() => {
-      collection = new Collection()
-      collection.resourceClient = resourceClient
+      TestCollection = class extends Collection {}
+      collection = new TestCollection()
+      TestCollection.resourceClient = resourceClient
       options = {}
     })
 
@@ -158,7 +162,7 @@ describe('createResourceSync', () => {
       `
     cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
-      collection.resource = resource
+      TestCollection.resource = resource
       collection.params = params
       resourceSync('read', collection, options)
       expect(originalSyncSpy).toBeCalledWith('read', collection, { url: expectedUrl })
@@ -167,8 +171,8 @@ describe('createResourceSync', () => {
 
   describe('with custom idAttribute', () => {
     beforeEach(() => {
-      model = new Model({ id: 10, date: 2000 })
-      model.resourceClient = resourceClient
+      model = new TestModel({ id: 10, date: 2000 })
+      TestModel.resourceClient = resourceClient
       options = {}
     })
 
@@ -178,7 +182,7 @@ describe('createResourceSync', () => {
       `
     cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
-      model.resource = resource
+      TestModel.resource = resource
       model.params = params
       resourceSync('read', model, options)
       expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
@@ -187,8 +191,8 @@ describe('createResourceSync', () => {
 
   describe('with empty idAttribute', () => {
     beforeEach(() => {
-      model = new Model({ id: 10 })
-      model.resourceClient = resourceClient
+      model = new TestModel({ id: 10 })
+      TestModel.resourceClient = resourceClient
       options = {}
     })
 
@@ -198,7 +202,7 @@ describe('createResourceSync', () => {
       `
     cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
-      model.resource = resource
+      TestModel.resource = resource
       model.params = params
       resourceSync('create', model, options)
       expect(originalSyncSpy).toBeCalledWith('update', model, { url: expectedUrl })

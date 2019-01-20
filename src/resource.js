@@ -37,13 +37,14 @@ function findResourceDef (client, resource) {
 
 export function createResourceSync (originalSync) {
   return function resourceSync (method, model, options) {
-    if (model.resource) {
+    const ctor = model.constructor
+    if (ctor.resource) {
       let resourceId
-      const client = model.resourceClient || (model.collection && model.collection.resourceClient)
+      const client = ctor.resourceClient || (model.collection && model.collection.constructor.resourceClient)
       if (!client) {
         throw new Error(`resourceClient not defined for ${model.cid}`)
       }
-      const resourceDef = findResourceDef(client, model.resource)
+      const resourceDef = findResourceDef(client, ctor.resource)
       if (model instanceof Model) {
         const idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute
         if (idAttribute) {
