@@ -1,4 +1,4 @@
-import Backbone from 'backbone'
+import { Collection, Model, Events } from 'nextbone'
 
 /**
  * A container for all the models of a particular type. Manages requests to your
@@ -28,25 +28,26 @@ import Backbone from 'backbone'
  * @public
  * @class Storage
  */
-class Storage {
+class Storage extends Events {
 
   /**
    * The model class to store.
-   * @type {Backbone.Model}
+   * @type {Model}
    */
-  static model = Backbone.Model
+  static model = Model
 
   /**
    * The collection class to store.
-   * @type {Backbone.Collection}
+   * @type {Collection}
    */
-  static collection = Backbone.Collection
+  static collection = Collection
 
   /**
    * @public
    * @constructs Storage
    */
   constructor () {
+    super()
     this.records = new this.constructor.collection()
     this.listenToOnce(this.records, 'sync', () => {
       this._hasSynced = true
@@ -61,7 +62,7 @@ class Storage {
    * @instance
    * @method find
    * @memberOf Storage
-   * @param {Number|String|Object|Backbone.Model} model - The model to find.
+   * @param {Number|String|Object|Model} model - The model to find.
    * @param {Boolean} forceFetch - Force fetch model from server.
    * @returns {Promise} - A promise that will resolve to the model.
    */
@@ -108,7 +109,7 @@ class Storage {
    * @instance
    * @method save
    * @memberOf Storage
-   * @param {Number|String|Object|Backbone.Model} model - The model to save
+   * @param {Number|String|Object|Model} model - The model to save
    * @returns {Promise} - A promise that will resolve to the saved model.
    */
   save (model, options) {
@@ -137,7 +138,7 @@ class Storage {
    * @instance
    * @method insert
    * @memberOf Storage
-   * @params {Object|Backbone.Model} - The model to add.
+   * @params {Object|Model} - The model to add.
    * @returns {Promise} - A promise that will resolve to the added model.
    */
   insert (model) {
@@ -152,8 +153,8 @@ class Storage {
    * @instance
    * @method _ensureModel
    * @memberOf Storage
-   * @params {Number|String|Object|Backbone.Model} - An id, object, or model.
-   * @returns {Backbone.Model} - The model.
+   * @params {Number|String|Object|Model} - An id, object, or model.
+   * @returns {Model} - The model.
    */
   _ensureModel (model) {
     const ModelClass = this.constructor.model
@@ -166,7 +167,5 @@ class Storage {
     }
   }
 }
-
-Object.assign(Storage.prototype, Backbone.Events)
 
 export default Storage

@@ -1,9 +1,7 @@
 /* eslint-env jest */
 
-import Backbone from 'backbone'
+import { Model, Collection } from 'nextbone'
 import { Storage } from '../../src/index'
-
-Backbone.Storage = Storage
 
 describe('Storage', () => {
   let testContext
@@ -14,26 +12,26 @@ describe('Storage', () => {
 
   describe('#find', () => {
     beforeEach(() => {
-      testContext.storage = new Backbone.Storage()
-      testContext.model1 = new Backbone.Model({ id: 1 })
-      testContext.model2 = new Backbone.Model({ id: 2 })
+      testContext.storage = new Storage()
+      testContext.model1 = new Model({ id: 1 })
+      testContext.model2 = new Model({ id: 2 })
 
-      jest.spyOn(Backbone.Model.prototype, 'fetch').mockImplementation(() => testContext.model2)
+      jest.spyOn(Model.prototype, 'fetch').mockImplementation(() => testContext.model2)
 
       return testContext.storage.insert(testContext.model1)
     })
 
     afterEach(() => {
-      Backbone.Model.prototype.fetch.mockClear()
+      Model.prototype.fetch.mockClear()
     })
 
     test('should not fetch twice', () => {
       return testContext.storage.find(2).then(function () {
         return testContext.storage.find(2)
       }).then(function (model) {
-        expect(model).toBeInstanceOf(Backbone.Model)
+        expect(model).toBeInstanceOf(Model)
         expect(model.id).toBe(2)
-        expect(Backbone.Model.prototype.fetch).toHaveBeenCalledTimes(1)
+        expect(Model.prototype.fetch).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -41,7 +39,7 @@ describe('Storage', () => {
       return testContext.storage.find(2).then(function () {
         return testContext.storage.find(2, true)
       }).then(function () {
-        expect(Backbone.Model.prototype.fetch).toHaveBeenCalledTimes(2)
+        expect(Model.prototype.fetch).toHaveBeenCalledTimes(2)
       })
     })
 
@@ -49,15 +47,15 @@ describe('Storage', () => {
       test('should return the record if it exists', () => {
         return testContext.storage.find(1).then(function (model) {
           expect(model).toBe(testContext.model1)
-          expect(Backbone.Model.prototype.fetch).not.toHaveBeenCalled()
+          expect(Model.prototype.fetch).not.toHaveBeenCalled()
         })
       })
 
       test('should fetch the model if no record exists', () => {
         return testContext.storage.find(2).then(function (model) {
-          expect(model).toBeInstanceOf(Backbone.Model)
+          expect(model).toBeInstanceOf(Model)
           expect(model.id).toBe(2)
-          expect(Backbone.Model.prototype.fetch).toHaveBeenCalledTimes(1)
+          expect(Model.prototype.fetch).toHaveBeenCalledTimes(1)
         })
       })
     })
@@ -66,15 +64,15 @@ describe('Storage', () => {
       test('should return the record if it exists', () => {
         return testContext.storage.find({ id: 1 }).then(function (model) {
           expect(model).toBe(testContext.model1)
-          expect(Backbone.Model.prototype.fetch).not.toHaveBeenCalled()
+          expect(Model.prototype.fetch).not.toHaveBeenCalled()
         })
       })
 
       test('should fetch the model if no record exists', () => {
         return testContext.storage.find({ id: 2 }).then(function (model) {
-          expect(model).toBeInstanceOf(Backbone.Model)
+          expect(model).toBeInstanceOf(Model)
           expect(model.id).toBe(2)
-          expect(Backbone.Model.prototype.fetch).toHaveBeenCalled()
+          expect(Model.prototype.fetch).toHaveBeenCalled()
         })
       })
     })
@@ -83,14 +81,14 @@ describe('Storage', () => {
       test('should return the record if it exists', () => {
         return testContext.storage.find(testContext.model1).then(function (model) {
           expect(model).toBe(testContext.model1)
-          expect(Backbone.Model.prototype.fetch).not.toHaveBeenCalled()
+          expect(Model.prototype.fetch).not.toHaveBeenCalled()
         })
       })
 
       test('should fetch the model if no record exists', () => {
         return testContext.storage.find(testContext.model2).then(function (model) {
           expect(model).toBe(testContext.model2)
-          expect(Backbone.Model.prototype.fetch).toHaveBeenCalled()
+          expect(Model.prototype.fetch).toHaveBeenCalled()
         })
       })
     })
@@ -98,9 +96,9 @@ describe('Storage', () => {
 
   describe('#findAll', () => {
     beforeEach(() => {
-      testContext.storage = new Backbone.Storage()
-      testContext.model1 = new Backbone.Model({ id: 1 })
-      testContext.model2 = new Backbone.Model({ id: 2 })
+      testContext.storage = new Storage()
+      testContext.model1 = new Model({ id: 1 })
+      testContext.model2 = new Model({ id: 2 })
 
       testContext.insertModels = function () {
         return Promise.all([
@@ -109,11 +107,11 @@ describe('Storage', () => {
         ])
       }
 
-      jest.spyOn(Backbone.Collection.prototype, 'fetch').mockImplementation(testContext.insertModels)
+      jest.spyOn(Collection.prototype, 'fetch').mockImplementation(testContext.insertModels)
     })
 
     afterEach(() => {
-      Backbone.Model.prototype.fetch.mockClear()
+      Model.prototype.fetch.mockClear()
     })
 
     test('should return the collection if it has been fetched', () => {
@@ -123,7 +121,7 @@ describe('Storage', () => {
       }).then(function (collection) {
         expect(collection.length).toBe(2)
         expect(collection).toBe(testContext.storage.records)
-        expect(Backbone.Collection.prototype.fetch).not.toHaveBeenCalled()
+        expect(Collection.prototype.fetch).not.toHaveBeenCalled()
       })
     })
 
@@ -131,7 +129,7 @@ describe('Storage', () => {
       return testContext.storage.findAll().then(function () {
         return testContext.storage.findAll({}, true)
       }).then(function () {
-        expect(Backbone.Collection.prototype.fetch).toHaveBeenCalledTimes(2)
+        expect(Collection.prototype.fetch).toHaveBeenCalledTimes(2)
       })
     })
 
@@ -139,7 +137,7 @@ describe('Storage', () => {
       return testContext.storage.findAll().then(function (collection) {
         expect(collection.length).toBe(2)
         expect(collection).toBe(testContext.storage.records)
-        expect(Backbone.Collection.prototype.fetch).toHaveBeenCalled()
+        expect(Collection.prototype.fetch).toHaveBeenCalled()
       })
     })
 
@@ -151,7 +149,7 @@ describe('Storage', () => {
             sortBy: 'name'
           }
         }).then(function () {
-          expect(Backbone.Collection.prototype.fetch).toHaveBeenCalledWith({
+          expect(Collection.prototype.fetch).toHaveBeenCalledWith({
             data: {
               sortBy: 'name'
             }
@@ -163,13 +161,13 @@ describe('Storage', () => {
 
   describe('#save', () => {
     beforeEach(() => {
-      testContext.storage = new Backbone.Storage()
-      testContext.model1 = new Backbone.Model({ id: 1 })
-      testContext.model2 = new Backbone.Model({ id: 2 })
+      testContext.storage = new Storage()
+      testContext.model1 = new Model({ id: 1 })
+      testContext.model2 = new Model({ id: 2 })
       testContext.model1Clone = testContext.model1.clone()
       testContext.model1Clone.set('some', 'value')
 
-      testContext.saveSpy = jest.spyOn(Backbone.Model.prototype, 'save').mockImplementation(() => null)
+      testContext.saveSpy = jest.spyOn(Model.prototype, 'save').mockImplementation(() => null)
 
       return testContext.storage.insert(testContext.model1)
     })
@@ -190,7 +188,7 @@ describe('Storage', () => {
     describe('by id', () => {
       test('should save an existing model', () => {
         return testContext.storage.save(1).then(function (model) {
-          expect(model).toBeInstanceOf(Backbone.Model)
+          expect(model).toBeInstanceOf(Model)
           expect(model.id).toBe(1)
           expect(testContext.saveSpy).toHaveBeenCalled()
         })
@@ -198,9 +196,9 @@ describe('Storage', () => {
 
       test('should save a non-existing model', () => {
         return testContext.storage.save(2).then(function (model) {
-          expect(model).toBeInstanceOf(Backbone.Model)
+          expect(model).toBeInstanceOf(Model)
           expect(model.id).toBe(2)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalled()
+          expect(Model.prototype.save).toHaveBeenCalled()
           expect(testContext.storage.records.get(2)).toBe(model)
         })
       })
@@ -210,17 +208,17 @@ describe('Storage', () => {
       test('should save and update an existing model', () => {
         const obj = { id: 1, some: 'value' }
         return testContext.storage.save(obj).then(function (model) {
-          expect(model).toBeInstanceOf(Backbone.Model)
+          expect(model).toBeInstanceOf(Model)
           expect(model.id).toBe(1)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(obj, undefined)
+          expect(Model.prototype.save).toHaveBeenCalledWith(obj, undefined)
         })
       })
 
       test('should save a non-existing model', () => {
         return testContext.storage.save({ id: 2 }).then(function (model) {
-          expect(model).toBeInstanceOf(Backbone.Model)
+          expect(model).toBeInstanceOf(Model)
           expect(model.id).toBe(2)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalled()
+          expect(Model.prototype.save).toHaveBeenCalled()
           expect(testContext.storage.records.get(2)).toBe(model)
         })
       })
@@ -230,14 +228,14 @@ describe('Storage', () => {
       test('should save an existing model', () => {
         return testContext.storage.save(testContext.model1).then(function (model) {
           expect(model).toBe(testContext.model1)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalled()
+          expect(Model.prototype.save).toHaveBeenCalled()
         })
       })
 
       test('should save a non-existing model', () => {
         return testContext.storage.save(testContext.model2).then(function (model) {
           expect(model).toBe(testContext.model2)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalled()
+          expect(Model.prototype.save).toHaveBeenCalled()
           expect(testContext.storage.records.get(2)).toBe(model)
         })
       })
@@ -245,7 +243,7 @@ describe('Storage', () => {
       test('should update and save an existing model which matches the passed one', () => {
         return testContext.storage.save(testContext.model1Clone).then(function (model) {
           expect(model).toBe(testContext.model1)
-          expect(Backbone.Model.prototype.save).toHaveBeenCalledWith(testContext.model1Clone.attributes, undefined)
+          expect(Model.prototype.save).toHaveBeenCalledWith(testContext.model1Clone.attributes, undefined)
         })
       })
     })
@@ -253,7 +251,7 @@ describe('Storage', () => {
 
   describe('#insert', () => {
     beforeEach(() => {
-      testContext.storage = new Backbone.Storage()
+      testContext.storage = new Storage()
     })
 
     describe('by object', () => {
@@ -267,7 +265,7 @@ describe('Storage', () => {
 
     describe('by model', () => {
       test('should insert the model', () => {
-        var model1 = new Backbone.Model({ id: 1 })
+        var model1 = new Model({ id: 1 })
         return testContext.storage.insert(model1).then(function (model) {
           expect(model).toBe(model1)
           expect(testContext.storage.records.get(1)).toBe(model1)

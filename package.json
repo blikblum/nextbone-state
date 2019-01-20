@@ -1,9 +1,9 @@
 {
-  "name": "backbone.state",
+  "name": "nextbone-state",
   "version": "0.4.0",
-  "description": "State classes for Backbone Models and Collections.",
-  "main": "dist/backbone.state.js",
-  "module": "dist/backbone.state.esm.js",
+  "description": "State classes for Nextbone Models and Collections.",
+  "main": "dist/nextbone-state.js",
+  "module": "dist/nextbone-state.js",
   "sideEffects": false,
   "scripts": {
     "test": "jest",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/blikblum/backbone.state.git"
+    "url": "https://github.com/blikblum/nextbone-state.git"
   },
   "keywords": [
     "backbone",
@@ -23,25 +23,34 @@
   "author": "Luiz Américo Pereira Câmara",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/blikblum/backbone.state/issues"
+    "url": "https://github.com/blikblum/nextbone-state/issues"
   },
-  "homepage": "https://github.com/blikblum/backbone.state",
+  "homepage": "https://github.com/blikblum/nextbone-state",
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-jest": "^23.0.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-env": "^1.7.0",
-    "backbone": "^1.3.3",
-    "jest": "^23.0.1",
-    "rollup": "^0.58.2",
-    "rollup-plugin-babel": "^3.0.4",
-    "standard": "^11.0.1",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-proposal-decorators": "^7.2.3",
+    "@babel/preset-env": "^7.0.0",
+    "babel-jest": "^24.0.0-alpha.12",
+    "jest": "^24.0.0-alpha.12",
+    "nextbone": "^0.7.0",
+    "rollup": "^1.1.1",
+    "rollup-plugin-babel": "^4.0.1",
+    "standard": "^12.0.1",
     "underscore": "~1.8.3"
   },
   "peerDependencies": {
-    "backbone": "^1.3.3"
+    "nextbone": "^0.7.0"
   },
   "dependencies": {
-    "path-to-regexp": "^2.2.1"
+    "path-to-regexp": "^3.0.0"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ],
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!nextbone).+\\.js$"
+    ]
   }
 }

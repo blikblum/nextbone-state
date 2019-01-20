@@ -1,4 +1,4 @@
-import { Model, Collection } from 'backbone'
+import { Model, Collection } from 'nextbone'
 import pathToRegexp from 'path-to-regexp'
 
 function getResourcePath (resourceDef, params = {}, resourceId) {
@@ -70,6 +70,12 @@ export const paramsMixin = {
   }
 }
 
-export const ResourceModel = Model.extend(paramsMixin)
+class ResourceModel extends Model {}
+class ResourceCollection extends Collection {}
+Object.assign(ResourceModel.prototype, paramsMixin)
+Object.assign(ResourceCollection.prototype, paramsMixin)
 
-export const ResourceCollection = Collection.extend(paramsMixin)
+export {
+  ResourceModel,
+  ResourceCollection
+}

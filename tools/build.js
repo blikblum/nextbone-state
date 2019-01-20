@@ -12,11 +12,9 @@ let dependencies = Object.assign({}, pkg.dependencies || {}, pkg.peerDependencie
 // Clean up the output directory
 promise = promise.then(() => del(['dist/*']))
 
-const outputName = 'backbone.state'
+const outputName = 'nextbone-state'
 
-const exportName = 'Backbone.State'
-
-const formats = ['es', 'umd']
+const formats = ['es']
 
 // Compile source code into a distributable format with Babel
 formats.forEach((format) => {
@@ -27,13 +25,9 @@ formats.forEach((format) => {
       exclude: 'node_modules/**'
     })]
   }).then(bundle => bundle.write({
-    file: `dist/${format === 'umd' ? outputName : outputName + '.esm'}.js`,
+    file: `dist/${outputName}.js`,
     format,
-    sourcemap: true,
-    name: format === 'umd' ? exportName : undefined,
-    globals: {
-      backbone: 'Backbone'
-    }
+    sourcemap: true
   })))
 })
 

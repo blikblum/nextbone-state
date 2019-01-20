@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import { ResourceModel, createResourceSync } from '../../src/index'
-import { Model, Collection } from 'backbone'
+import { Model, Collection } from 'nextbone'
 
 const resourceDefs = [
   {
@@ -84,7 +84,7 @@ describe('createResourceSync', () => {
   describe('with a model without resource', () => {
     beforeEach(() => {
       model = new Model()
-      options = {parse: true}
+      options = { parse: true }
     })
 
     test('should pass unaltered options', () => {
@@ -93,7 +93,7 @@ describe('createResourceSync', () => {
     })
   })
 
-  describe('with a empty model', () => {
+  describe('with an empty model', () => {
     beforeEach(() => {
       model = new Model()
       model.resourceClient = resourceClient
@@ -103,23 +103,23 @@ describe('createResourceSync', () => {
     const cases = test.each`
       resource | params | url
       ${'patient'} | ${{}} | ${'patients'}
-      ${'patient'} | ${{registry: 2}} | ${'patients?registry=2'}
-      ${'patientbyregistry'} | ${{registry: 3, name: 'luiz'}} | ${'patients/search?registry=3&name=luiz'}
-      ${'patientaccompaniment'} | ${{patientid: 1}} | ${'patients/1/accompaniments'}      
+      ${'patient'} | ${{ registry: 2 }} | ${'patients?registry=2'}
+      ${'patientbyregistry'} | ${{ registry: 3, name: 'luiz' }} | ${'patients/search?registry=3&name=luiz'}
+      ${'patientaccompaniment'} | ${{ patientid: 1 }} | ${'patients/1/accompaniments'}      
       ${'crdpatient'} | ${{}} | ${'patients/crd'}      
       `
-    cases('should pass options with url = $url when resource is $resource and params is $params', ({resource, params, url}) => {
+    cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
       model.resource = resource
       model.params = params
       resourceSync('read', model, options)
-      expect(originalSyncSpy).toBeCalledWith('read', model, {url: expectedUrl})
+      expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
     })
   })
 
   describe('with a initialized model', () => {
     beforeEach(() => {
-      model = new Model({id: 10})
+      model = new Model({ id: 10 })
       model.resourceClient = resourceClient
       options = {}
     })
@@ -127,16 +127,16 @@ describe('createResourceSync', () => {
     const cases = test.each`
       resource | params | url
       ${'patient'} | ${{}} | ${'patients/10'}
-      ${'patient'} | ${{registry: 2}} | ${'patients/10?registry=2'}      
-      ${'patientaccompaniment'} | ${{patientid: 1}} | ${'patients/1/accompaniments/10'}      
+      ${'patient'} | ${{ registry: 2 }} | ${'patients/10?registry=2'}      
+      ${'patientaccompaniment'} | ${{ patientid: 1 }} | ${'patients/1/accompaniments/10'}      
       ${'crdpatient'} | ${{}} | ${'patients/crd/10'} 
       `
-    cases('should pass options with url = $url when resource is $resource and params is $params', ({resource, params, url}) => {
+    cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
       model.resource = resource
       model.params = params
       resourceSync('read', model, options)
-      expect(originalSyncSpy).toBeCalledWith('read', model, {url: expectedUrl})
+      expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
     })
   })
 
@@ -151,57 +151,57 @@ describe('createResourceSync', () => {
     const cases = test.each`
       resource | params | url
       ${'patient'} | ${{}} | ${'patients'}
-      ${'patient'} | ${{registry: 2}} | ${'patients?registry=2'}
-      ${'patientbyregistry'} | ${{registry: 3}} | ${'patients/search?registry=3'}
-      ${'patientaccompaniment'} | ${{patientid: 1}} | ${'patients/1/accompaniments'}    
+      ${'patient'} | ${{ registry: 2 }} | ${'patients?registry=2'}
+      ${'patientbyregistry'} | ${{ registry: 3 }} | ${'patients/search?registry=3'}
+      ${'patientaccompaniment'} | ${{ patientid: 1 }} | ${'patients/1/accompaniments'}    
       ${'crdpatient'} | ${{}} | ${'patients/crd'}      
       `
-    cases('should pass options with url = $url when resource is $resource and params is $params', ({resource, params, url}) => {
+    cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
       collection.resource = resource
       collection.params = params
       resourceSync('read', collection, options)
-      expect(originalSyncSpy).toBeCalledWith('read', collection, {url: expectedUrl})
+      expect(originalSyncSpy).toBeCalledWith('read', collection, { url: expectedUrl })
     })
   })
 
   describe('with custom idAttribute', () => {
     beforeEach(() => {
-      model = new Model({id: 10, date: 2000})
+      model = new Model({ id: 10, date: 2000 })
       model.resourceClient = resourceClient
       options = {}
     })
 
     const cases = test.each`
       resource | params | url      
-      ${'patientevaluation'} | ${{patientid: 3}} | ${'patients/3/evaluations/2000'}
+      ${'patientevaluation'} | ${{ patientid: 3 }} | ${'patients/3/evaluations/2000'}
       `
-    cases('should pass options with url = $url when resource is $resource and params is $params', ({resource, params, url}) => {
+    cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
       model.resource = resource
       model.params = params
       resourceSync('read', model, options)
-      expect(originalSyncSpy).toBeCalledWith('read', model, {url: expectedUrl})
+      expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
     })
   })
 
   describe('with empty idAttribute', () => {
     beforeEach(() => {
-      model = new Model({id: 10})
+      model = new Model({ id: 10 })
       model.resourceClient = resourceClient
       options = {}
     })
 
     const cases = test.each`
       resource | params | url
-      ${'accompanimentdata'} | ${{patientid: 2}} | ${'patients/2/accompanimentdata'}      
+      ${'accompanimentdata'} | ${{ patientid: 2 }} | ${'patients/2/accompanimentdata'}      
       `
-    cases('should pass options with url = $url when resource is $resource and params is $params', ({resource, params, url}) => {
+    cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
       const expectedUrl = baseUrl + url
       model.resource = resource
       model.params = params
       resourceSync('create', model, options)
-      expect(originalSyncSpy).toBeCalledWith('update', model, {url: expectedUrl})
+      expect(originalSyncSpy).toBeCalledWith('update', model, { url: expectedUrl })
     })
   })
 })
