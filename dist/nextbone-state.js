@@ -1,84 +1,95 @@
-import Backbone, { Model, Collection } from 'backbone';
+import { Model, Collection, Events } from 'nextbone';
 import pathToRegexp from 'path-to-regexp';
 
-function getResourcePath(resourceDef) {
-  var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var resourceId = arguments[2];
+function getResourcePath(resourceDef, params = {}, resourceId) {
+  const toPath = pathToRegexp.compile(resourceDef.path);
+  let query = '';
+  let result = toPath(params);
 
-  var toPath = pathToRegexp.compile(resourceDef.path);
-  var query = '';
-  var result = toPath(params);
   if (resourceDef.params) {
-    resourceDef.params.forEach(function (paramDef) {
-      var paramValue = params[paramDef.name];
-      var isQuery = paramDef.location === 'query';
-      var isRequired = typeof paramDef.required === 'undefined' && !isQuery || paramDef.required === true;
+    resourceDef.params.forEach(paramDef => {
+      const paramValue = params[paramDef.name];
+      const isQuery = paramDef.location === 'query';
+      const isRequired = typeof paramDef.required === 'undefined' && !isQuery || paramDef.required === true;
+
       if (isRequired && paramValue == null) {
-        throw new Error('Param ' + paramDef.name + ' is not defined for resource ' + resourceDef.name);
+        throw new Error(`Param ${paramDef.name} is not defined for resource ${resourceDef.name}`);
       }
+
       if (isQuery && paramValue != null) {
-        query += '' + (query ? '&' : '') + encodeURIComponent(paramDef.name) + '=' + encodeURIComponent(paramValue);
+        query += `${query ? '&' : ''}${encodeURIComponent(paramDef.name)}=${encodeURIComponent(paramValue)}`;
       }
     });
   }
+
   if (resourceId) {
     result = result.replace(/[^/]$/, '$&/') + encodeURIComponent(resourceId);
   }
+
   if (query) {
-    result += '?' + query;
+    result += `?${query}`;
   }
+
   return result;
 }
 
 function findResourceDef(client, resource) {
-  var result = client.resourceDefs.find(function (def) {
-    return def.name === resource;
-  });
+  const result = client.resourceDefs.find(def => def.name === resource);
+
   if (!result) {
-    throw new Error('Unable to find resource definition for ' + resource);
+    throw new Error(`Unable to find resource definition for ${resource}`);
   }
+
   return result;
 }
 
 function createResourceSync(originalSync) {
   return function resourceSync(method, model, options) {
     if (model.resource) {
-      var resourceId = void 0;
-      var client = model.resourceClient || model.collection && model.collection.resourceClient;
+      let resourceId;
+      const client = model.resourceClient || model.collection && model.collection.resourceClient;
+
       if (!client) {
-        throw new Error('resourceClient not defined for ' + model.cid);
+        throw new Error(`resourceClient not defined for ${model.cid}`);
       }
-      var resourceDef = findResourceDef(client, model.resource);
+
+      const resourceDef = findResourceDef(client, model.resource);
+
       if (model instanceof Model) {
-        var idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute;
+        const idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute;
+
         if (idAttribute) {
           resourceId = model.get(idAttribute);
         } else if (method === 'create') {
           method = 'update';
         }
       }
+
       options = options ? Object.assign({}, options) : {};
       options.url = client.baseUrl + getResourcePath(resourceDef, model.params, resourceId);
     }
+
     return originalSync(method, model, options);
   };
 }
-
-var paramsMixin = {
-  clearParams: function clearParams() {
+const paramsMixin = {
+  clearParams() {
     this.params && (this.params = {});
   },
-  setParam: function setParam(name, value) {
+
+  setParam(name, value) {
     this.params || (this.params = {});
     this.params[name] = value;
   }
+
 };
 
-var ResourceModel = Model.extend(paramsMixin);
+class ResourceModel extends Model {}
 
-var ResourceCollection = Collection.extend(paramsMixin);
+class ResourceCollection extends Collection {}
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+Object.assign(ResourceModel.prototype, paramsMixin);
+Object.assign(ResourceCollection.prototype, paramsMixin);
 
 /**
  * A container for all the models of a particular type. Manages requests to your
@@ -109,29 +120,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @class Storage
  */
 
-var Storage = function () {
+class Storage extends Events {
+  /**
+   * The model class to store.
+   * @type {Model}
+   */
+
+  /**
+   * The collection class to store.
+   * @type {Collection}
+   */
 
   /**
    * @public
    * @constructs Storage
    */
-
-
-  /**
-   * The model class to store.
-   * @type {Backbone.Model}
-   */
-  function Storage() {
-    var _this = this;
-
-    _classCallCheck(this, Storage);
-
+  constructor() {
+    super();
     this.records = new this.constructor.collection();
-    this.listenToOnce(this.records, 'sync', function () {
-      _this._hasSynced = true;
+    this.listenToOnce(this.records, 'sync', () => {
+      this._hasSynced = true;
     });
   }
-
   /**
    * Find a specific model from the store or fetch it from the server and insert
    * it into the store.
@@ -140,35 +150,24 @@ var Storage = function () {
    * @instance
    * @method find
    * @memberOf Storage
-   * @param {Number|String|Object|Backbone.Model} model - The model to find.
+   * @param {Number|String|Object|Model} model - The model to find.
    * @param {Boolean} forceFetch - Force fetch model from server.
    * @returns {Promise} - A promise that will resolve to the model.
    */
 
 
-  /**
-   * The collection class to store.
-   * @type {Backbone.Collection}
-   */
-
-
-  Storage.prototype.find = function find(model) {
-    var _this2 = this;
-
-    var forceFetch = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-    var record = this.records.get(model);
+  find(model, forceFetch = false) {
+    let record = this.records.get(model);
 
     if (record && !forceFetch) {
       return Promise.resolve(record);
     } else {
       model = this._ensureModel(model);
-      return Promise.resolve(model.fetch()).then(function () {
-        return _this2.insert(model);
+      return Promise.resolve(model.fetch()).then(() => {
+        return this.insert(model);
       });
     }
-  };
-
+  }
   /**
    * Find all the models in the store or fetch them from the server if they
    * haven't been fetched before.
@@ -184,21 +183,15 @@ var Storage = function () {
    */
 
 
-  Storage.prototype.findAll = function findAll() {
-    var _this3 = this;
-
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var forceFetch = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
+  findAll(options = {}, forceFetch = false) {
     if (this._hasSynced && !forceFetch) {
       return Promise.resolve(this.records);
     } else {
-      return Promise.resolve(this.records.fetch(options)).then(function () {
-        return _this3.records;
+      return Promise.resolve(this.records.fetch(options)).then(() => {
+        return this.records;
       });
     }
-  };
-
+  }
   /**
    * Save a model to the server.
    *
@@ -206,32 +199,33 @@ var Storage = function () {
    * @instance
    * @method save
    * @memberOf Storage
-   * @param {Number|String|Object|Backbone.Model} model - The model to save
+   * @param {Number|String|Object|Model} model - The model to save
    * @returns {Promise} - A promise that will resolve to the saved model.
    */
 
 
-  Storage.prototype.save = function save(model, options) {
-    var _this4 = this;
+  save(model, options) {
+    let attributes;
+    let record = this.records.get(model);
 
-    var attributes = void 0;
-    var record = this.records.get(model);
     if (record) {
       if (typeof model === 'object' && record !== model) {
         attributes = model instanceof this.constructor.model ? model.attributes : model;
       }
+
       model = record;
     } else {
       model = this._ensureModel(model);
     }
-    return Promise.resolve(model.save(attributes, options)).then(function () {
+
+    return Promise.resolve(model.save(attributes, options)).then(() => {
       if (!record) {
-        _this4.insert(model);
+        this.insert(model);
       }
+
       return model;
     });
-  };
-
+  }
   /**
    * Insert a model into the store.
    *
@@ -239,16 +233,17 @@ var Storage = function () {
    * @instance
    * @method insert
    * @memberOf Storage
-   * @params {Object|Backbone.Model} - The model to add.
+   * @params {Object|Model} - The model to add.
    * @returns {Promise} - A promise that will resolve to the added model.
    */
 
 
-  Storage.prototype.insert = function insert(model) {
-    model = this.records.add(model, { merge: true });
+  insert(model) {
+    model = this.records.add(model, {
+      merge: true
+    });
     return Promise.resolve(model);
-  };
-
+  }
   /**
    * Ensure that we have a real model from an id, object, or model.
    *
@@ -256,30 +251,29 @@ var Storage = function () {
    * @instance
    * @method _ensureModel
    * @memberOf Storage
-   * @params {Number|String|Object|Backbone.Model} - An id, object, or model.
-   * @returns {Backbone.Model} - The model.
+   * @params {Number|String|Object|Model} - An id, object, or model.
+   * @returns {Model} - The model.
    */
 
 
-  Storage.prototype._ensureModel = function _ensureModel(model) {
-    var ModelClass = this.constructor.model;
+  _ensureModel(model) {
+    const ModelClass = this.constructor.model;
+
     if (model instanceof ModelClass) {
       return model;
     } else if (typeof model === 'object') {
       return new ModelClass(model);
     } else {
-      return new ModelClass({ id: model });
+      return new ModelClass({
+        id: model
+      });
     }
-  };
+  }
 
-  return Storage;
-}();
+}
 
-Storage.model = Backbone.Model;
-Storage.collection = Backbone.Collection;
-
-
-Object.assign(Storage.prototype, Backbone.Events);
+Storage.model = Model;
+Storage.collection = Collection;
 
 export { createResourceSync, paramsMixin, ResourceCollection, ResourceModel, Storage };
-//# sourceMappingURL=backbone.state.esm.js.map
+//# sourceMappingURL=nextbone-state.js.map
