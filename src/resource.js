@@ -43,7 +43,7 @@ export function createResourceSync (originalSync) {
       let resourceId
       const client = ctor.resourceClient || (model.collection && model.collection.constructor.resourceClient) || (ctor.model && ctor.model.resourceClient)
       if (!client) {
-        throw new Error(`resourceClient not defined for ${model.cid}`)
+        throw new Error(`resourceClient not defined for ${ctor.name}${model.cid ? ` (${model.cid})` : ''}`)
       }
       const resourceDef = findResourceDef(client, resource)
       if (model instanceof Model) {
