@@ -45,15 +45,18 @@ function findResourceDef(client, resource) {
 
 function createResourceSync(originalSync) {
   return function resourceSync(method, model, options) {
-    if (model.resource) {
+    const ctor = model.constructor;
+    const resource = ctor.resource || ctor.model && ctor.model.resource;
+
+    if (resource) {
       let resourceId;
-      const client = model.resourceClient || model.collection && model.collection.resourceClient;
+      const client = ctor.resourceClient || model.collection && model.collection.constructor.resourceClient || ctor.model && ctor.model.resourceClient;
 
       if (!client) {
-        throw new Error(`resourceClient not defined for ${model.cid}`);
+        throw new Error(`resourceClient not defined for ${ctor.name}${model.cid ? ` (${model.cid})` : ''}`);
       }
 
-      const resourceDef = findResourceDef(client, model.resource);
+      const resourceDef = findResourceDef(client, resource);
 
       if (model instanceof Model) {
         const idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute;
@@ -275,5 +278,5 @@ class Storage extends Events {
 Storage.model = Model;
 Storage.collection = Collection;
 
-export { createResourceSync, paramsMixin, ResourceCollection, ResourceModel, Storage };
+export { ResourceCollection, ResourceModel, Storage, createResourceSync, paramsMixin };
 //# sourceMappingURL=nextbone-state.js.map

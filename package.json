@@ -1,6 +1,6 @@
 {
   "name": "nextbone-state",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "State classes for Nextbone Models and Collections.",
   "main": "dist/nextbone-state.js",
   "module": "dist/nextbone-state.js",
