@@ -1,10 +1,12 @@
-# Backbone State
+# Nextbone State
 
-State classes for Backbone Models and Collections.
+State classes for Nextbone Models and Collections.
 
 ## Usage
 
 ### Storage
+
+Manage data in a centralized store
 
 > _**Note:** Storage class requires a global `Promise` object to
 > exist, please include a `Promise` polyfill if necessary.
@@ -14,9 +16,9 @@ In order to create a new Store extend the `Storage` class and set the model and
 collection to the correct classes.
 
 ```js
-import Storage from 'backbone.storage';
-import Book from './model';
-import Books from './collection';
+import { Storage } from 'nextbone-state';
+import { Book } from './model';
+import { Books } from './collection';
 
 class BookStore extends Storage {
   static model = Book
@@ -92,7 +94,73 @@ bookStore.insert(book).then(model => {
 });
 ```
 
-## Contibuting
+### Resource
+
+Configures REST resource endpoints declaratively
+
+#### Setup sync handler
+
+```javascript
+import { createResourceSync } from "nextbone-state";
+import { sync } from "nextbone"
+
+sync.handler = createResourceSync(sync.handler)
+```
+
+#### Configure endpoints
+
+```javascript
+import { ResourceCollection, ResourceModel } from "nextbone-state";
+
+const baseUrl = '/cgi-bin/books.cgi/'
+
+const resourceDefs = [
+  {
+    name: 'book',
+    path: 'books',
+    params: [
+      {
+        name: 'author',
+        location: 'query'
+      }
+    ]
+  },
+  {
+    name: 'bookbycategory',
+    path: 'categories/:categoryid/books',
+    params: [
+      {
+        name: 'categoryid'        
+      }
+    ]
+  }
+]
+
+const resourceClient = {
+  baseUrl,
+  resourceDefs
+}
+
+// configure default resourceClient
+ResourceCollection.resourceClient = resourceClient
+ResourceModel.resourceClient = resourceClient
+```
+
+#### Configure Model/Collection
+
+```javascript
+import { ResourceCollection, ResourceModel } from "nextbone-state";
+
+class Books extends ResourceCollection {
+  static resource = 'book'
+}
+
+const books = new Books()
+books.fetch() // calls /cgi-bin/books.cgi/books
+books.params.author = 'luiz'
+books.fetch() // calls /cgi-bin/books.cgi/books?author=luiz
+```
+
 
 ### Getting Started
 
@@ -108,5 +176,4 @@ npm test
 
 ===
 
-© 2014 James Kyle. Distributed under ISC license.
-© 2018 Luiz Américo Pereira Câmara
+© 2019 Luiz Américo Pereira Câmara
