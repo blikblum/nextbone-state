@@ -94,6 +94,21 @@ class ResourceCollection extends Collection {}
 Object.assign(ResourceModel.prototype, paramsMixin);
 Object.assign(ResourceCollection.prototype, paramsMixin);
 
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
 /**
  * A container for all the models of a particular type. Manages requests to your
  * server.
@@ -275,8 +290,9 @@ class Storage extends Events {
 
 }
 
-Storage.model = Model;
-Storage.collection = Collection;
+_defineProperty(Storage, "model", Model);
+
+_defineProperty(Storage, "collection", Collection);
 
 export { ResourceCollection, ResourceModel, Storage, createResourceSync, paramsMixin };
 //# sourceMappingURL=nextbone-state.js.map
