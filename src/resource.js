@@ -1,5 +1,5 @@
 import { Model, Collection } from 'nextbone'
-import pathToRegexp from 'path-to-regexp'
+import pathToRegexp from 'path-to-regexp-es'
 
 function getResourcePath (resourceDef, params = {}, resourceId) {
   const toPath = pathToRegexp.compile(resourceDef.path)

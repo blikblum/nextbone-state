@@ -44,14 +44,14 @@
     "nextbone": "^0.11.0"
   },
   "dependencies": {
-    "path-to-regexp": "3.0.0"
+    "path-to-regexp-es": "^3.0.0"
   },
   "jest": {
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
     ],
     "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!nextbone).+\\.js$"
+      "<rootDir>/node_modules/underscore"
     ]
   }
 }
