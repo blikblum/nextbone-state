@@ -117,6 +117,29 @@ describe('createResourceSync', () => {
       resourceSync('read', model, options)
       expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
     })
+
+    describe('with params defined in collection', () => {
+      let collection
+      beforeEach(() => {
+        collection = new Collection
+        collection.add(model)
+      })
+      const cases = test.each`
+      resource | params | url
+      ${'patient'} | ${{}} | ${'patients'}
+      ${'patient'} | ${{ registry: 2 }} | ${'patients?registry=2'}
+      ${'patientbyregistry'} | ${{ registry: 3, name: 'luiz' }} | ${'patients/search?registry=3&name=luiz'}
+      ${'patientaccompaniment'} | ${{ patientid: 1 }} | ${'patients/1/accompaniments'}      
+      ${'crdpatient'} | ${{}} | ${'patients/crd'}
+      `
+      cases('should pass options with url = $url when resource is $resource and params is $params', ({ resource, params, url }) => {
+        const expectedUrl = baseUrl + url
+        TestModel.resource = resource
+        collection.params = params
+        resourceSync('read', model, options)
+        expect(originalSyncSpy).toBeCalledWith('read', model, { url: expectedUrl })
+      })      
+    })
   })
 
   describe('with a initialized model', () => {
@@ -142,7 +165,7 @@ describe('createResourceSync', () => {
     })
   })
 
-  describe('with a collection with resource defined in self class', () => {
+  describe('with a collection with resource defined in its class', () => {
     let collection
     let TestCollection
     beforeEach(() => {

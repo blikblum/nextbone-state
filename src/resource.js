@@ -1,4 +1,5 @@
 import { Model, Collection } from 'nextbone'
+import { extend } from 'underscore'
 import pathToRegexp from 'path-to-regexp-es'
 
 function getResourcePath (resourceDef, params = {}, resourceId) {
@@ -55,7 +56,8 @@ export function createResourceSync (originalSync) {
         }
       }
       options = options ? Object.assign({}, options) : {}
-      options.url = client.baseUrl + getResourcePath(resourceDef, model.params, resourceId)
+      const params = model.collection ? extend({}, model.collection.params, model.params) : model.params
+      options.url = client.baseUrl + getResourcePath(resourceDef, params, resourceId)
     }
     return originalSync(method, model, options)
   }
