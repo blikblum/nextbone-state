@@ -1,10 +1,10 @@
 import { Model, Collection, Events } from 'nextbone';
-import pathToRegexp from 'path-to-regexp';
+import { extend } from 'underscore';
+import pathToRegexp from 'path-to-regexp-es';
 
 function getResourcePath(resourceDef, params = {}, resourceId) {
   const toPath = pathToRegexp.compile(resourceDef.path);
   let query = '';
-  let result = toPath(params);
 
   if (resourceDef.params) {
     resourceDef.params.forEach(paramDef => {
@@ -21,6 +21,8 @@ function getResourcePath(resourceDef, params = {}, resourceId) {
       }
     });
   }
+
+  let result = toPath(params);
 
   if (resourceId) {
     result = result.replace(/[^/]$/, '$&/') + encodeURIComponent(resourceId);
@@ -69,7 +71,8 @@ function createResourceSync(originalSync) {
       }
 
       options = options ? Object.assign({}, options) : {};
-      options.url = client.baseUrl + getResourcePath(resourceDef, model.params, resourceId);
+      const params = model.collection ? extend({}, model.collection.params, model.params) : model.params;
+      options.url = client.baseUrl + getResourcePath(resourceDef, params, resourceId);
     }
 
     return originalSync(method, model, options);
@@ -94,30 +97,14 @@ class ResourceCollection extends Collection {}
 Object.assign(ResourceModel.prototype, paramsMixin);
 Object.assign(ResourceCollection.prototype, paramsMixin);
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
 /**
  * A container for all the models of a particular type. Manages requests to your
  * server.
- * Original author: James Kyle <me@thejameskyle.com>
  * @example
- * var BookStorage = Storage.extend({
- *   model: Book,
- *   collection: Books
- * });
+ * class BookStorage extends Storage {
+ *   static model = Book
+ *   static collection = Books
+ * };
  * var bookStorage = new BookStorage();
  *
  * bookStorage.find(1).then(function(model) {
@@ -290,9 +277,8 @@ class Storage extends Events {
 
 }
 
-_defineProperty(Storage, "model", Model);
-
-_defineProperty(Storage, "collection", Collection);
+Storage.model = Model;
+Storage.collection = Collection;
 
 export { ResourceCollection, ResourceModel, Storage, createResourceSync, paramsMixin };
 //# sourceMappingURL=nextbone-state.js.map
