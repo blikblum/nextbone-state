@@ -2,19 +2,22 @@ import { Model, Collection } from 'nextbone'
 import { extend } from 'underscore'
 import pathToRegexp from 'path-to-regexp-es'
 
-function getResourcePath (resourceDef, params = {}, resourceId) {
+function getResourcePath(resourceDef, params = {}, resourceId) {
   const toPath = pathToRegexp.compile(resourceDef.path)
   let query = ''
   if (resourceDef.params) {
     resourceDef.params.forEach(paramDef => {
       const paramValue = params[paramDef.name]
       const isQuery = paramDef.location === 'query'
-      const isRequired = (typeof paramDef.required === 'undefined' && !isQuery) || paramDef.required === true
+      const isRequired =
+        (typeof paramDef.required === 'undefined' && !isQuery) || paramDef.required === true
       if (isRequired && paramValue == null) {
         throw new Error(`Param ${paramDef.name} is not defined for resource ${resourceDef.name}`)
       }
       if (isQuery && paramValue != null) {
-        query += `${query ? '&' : ''}${encodeURIComponent(paramDef.name)}=${encodeURIComponent(paramValue)}`
+        query += `${query ? '&' : ''}${encodeURIComponent(paramDef.name)}=${encodeURIComponent(
+          paramValue
+        )}`
       }
     })
   }
@@ -28,7 +31,7 @@ function getResourcePath (resourceDef, params = {}, resourceId) {
   return result
 }
 
-function findResourceDef (client, resource) {
+function findResourceDef(client, resource) {
   const result = client.resourceDefs.find(def => def.name === resource)
   if (!result) {
     throw new Error(`Unable to find resource definition for ${resource}`)
@@ -36,19 +39,25 @@ function findResourceDef (client, resource) {
   return result
 }
 
-export function createResourceSync (originalSync) {
-  return function resourceSync (method, model, options) {
+export function createResourceSync(originalSync) {
+  return function resourceSync(method, model, options) {
     const ctor = model.constructor
     const resource = ctor.resource || (ctor.model && ctor.model.resource)
     if (resource) {
       let resourceId
-      const client = ctor.resourceClient || (model.collection && model.collection.constructor.resourceClient) || (ctor.model && ctor.model.resourceClient)
+      const client =
+        ctor.resourceClient ||
+        (model.collection && model.collection.constructor.resourceClient) ||
+        (ctor.model && ctor.model.resourceClient)
       if (!client) {
-        throw new Error(`resourceClient not defined for ${ctor.name}${model.cid ? ` (${model.cid})` : ''}`)
+        throw new Error(
+          `resourceClient not defined for ${ctor.name}${model.cid ? ` (${model.cid})` : ''}`
+        )
       }
       const resourceDef = findResourceDef(client, resource)
       if (model instanceof Model) {
-        const idAttribute = 'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute
+        const idAttribute =
+          'idAttribute' in resourceDef ? resourceDef.idAttribute : model.idAttribute
         if (idAttribute) {
           resourceId = model.get(idAttribute)
         } else if (method === 'create') {
@@ -56,7 +65,9 @@ export function createResourceSync (originalSync) {
         }
       }
       options = options ? Object.assign({}, options) : {}
-      const params = model.collection ? extend({}, model.collection.params, model.params) : model.params
+      const params = model.collection
+        ? extend({}, model.collection.params, model.params)
+        : model.params
       options.url = client.baseUrl + getResourcePath(resourceDef, params, resourceId)
     }
     return originalSync(method, model, options)
@@ -64,11 +75,11 @@ export function createResourceSync (originalSync) {
 }
 
 export const paramsMixin = {
-  clearParams () {
+  clearParams() {
     this.params && (this.params = {})
   },
 
-  setParam (name, value) {
+  setParam(name, value) {
     this.params || (this.params = {})
     this.params[name] = value
   }
@@ -79,7 +90,4 @@ class ResourceCollection extends Collection {}
 Object.assign(ResourceModel.prototype, paramsMixin)
 Object.assign(ResourceCollection.prototype, paramsMixin)
 
-export {
-  ResourceModel,
-  ResourceCollection
-}
+export { ResourceModel, ResourceCollection }

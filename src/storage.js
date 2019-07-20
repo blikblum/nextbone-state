@@ -29,7 +29,6 @@ import { Collection, Model, Events } from 'nextbone'
  * @class Storage
  */
 class Storage extends Events {
-
   /**
    * The model class to store.
    * @type {Model}
@@ -46,7 +45,7 @@ class Storage extends Events {
    * @public
    * @constructs Storage
    */
-  constructor () {
+  constructor() {
     super()
     this.records = new this.constructor.collection()
     this.listenToOnce(this.records, 'sync', () => {
@@ -66,7 +65,7 @@ class Storage extends Events {
    * @param {Boolean} forceFetch - Force fetch model from server.
    * @returns {Promise} - A promise that will resolve to the model.
    */
-  find (model, forceFetch = false) {
+  find(model, forceFetch = false) {
     let record = this.records.get(model)
 
     if (record && !forceFetch) {
@@ -92,7 +91,7 @@ class Storage extends Events {
    * @param {Boolean} forceFetch - Force fetch model from server.
    * @returns {Promise} - A promise that will resolve to the entire collection.
    */
-  findAll (options = {}, forceFetch = false) {
+  findAll(options = {}, forceFetch = false) {
     if (this._hasSynced && !forceFetch) {
       return Promise.resolve(this.records)
     } else {
@@ -112,7 +111,7 @@ class Storage extends Events {
    * @param {Number|String|Object|Model} model - The model to save
    * @returns {Promise} - A promise that will resolve to the saved model.
    */
-  save (model, options) {
+  save(model, options) {
     let attributes
     let record = this.records.get(model)
     if (record) {
@@ -141,7 +140,7 @@ class Storage extends Events {
    * @params {Object|Model} - The model to add.
    * @returns {Promise} - A promise that will resolve to the added model.
    */
-  insert (model) {
+  insert(model) {
     model = this.records.add(model, { merge: true })
     return Promise.resolve(model)
   }
@@ -156,7 +155,7 @@ class Storage extends Events {
    * @params {Number|String|Object|Model} - An id, object, or model.
    * @returns {Model} - The model.
    */
-  _ensureModel (model) {
+  _ensureModel(model) {
     const ModelClass = this.constructor.model
     if (model instanceof ModelClass) {
       return model
