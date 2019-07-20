@@ -3,12 +3,11 @@ import { Collection, Model, Events } from 'nextbone'
 /**
  * A container for all the models of a particular type. Manages requests to your
  * server.
- * Original author: James Kyle <me@thejameskyle.com>
  * @example
- * var BookStorage = Storage.extend({
- *   model: Book,
- *   collection: Books
- * });
+ * class BookStorage extends Storage {
+ *   static model = Book
+ *   static collection = Books
+ * };
  * var bookStorage = new BookStorage();
  *
  * bookStorage.find(1).then(function(model) {
