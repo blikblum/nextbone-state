@@ -5,7 +5,6 @@ import pathToRegexp from 'path-to-regexp-es'
 function getResourcePath (resourceDef, params = {}, resourceId) {
   const toPath = pathToRegexp.compile(resourceDef.path)
   let query = ''
-  let result = toPath(params)
   if (resourceDef.params) {
     resourceDef.params.forEach(paramDef => {
       const paramValue = params[paramDef.name]
@@ -19,6 +18,7 @@ function getResourcePath (resourceDef, params = {}, resourceId) {
       }
     })
   }
+  let result = toPath(params)
   if (resourceId) {
     result = result.replace(/[^/]$/, '$&/') + encodeURIComponent(resourceId)
   }
