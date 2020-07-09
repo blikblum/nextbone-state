@@ -28,18 +28,18 @@
   },
   "homepage": "https://github.com/blikblum/nextbone-state",
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-decorators": "^7.4.4",
-    "@babel/preset-env": "^7.5.5",
-    "babel-jest": "^24.8.0",
-    "del": "^5.0.0",
-    "jest": "^24.8.0",
+    "@babel/core": "^7.10.4",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-decorators": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "babel-jest": "^26.1.0",
+    "del": "^5.1.0",
+    "jest": "^26.1.0",
     "lodash-es": "^4.17.15",
     "nextbone": "^0.20.0",
-    "rollup": "^1.17.0",
-    "rollup-plugin-babel": "^4.3.3",
-    "standard": "^13.0.2"
+    "rollup": "^2.21.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "standard": "^14.3.4"
   },
   "peerDependencies": {
     "nextbone": "^0.20.0"
