@@ -3570,6 +3570,11 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
+lodash-es@^4.17.15:
+  version "4.17.15"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.15.tgz#21bd96839354412f23d7a10340e5eac6ee455d78"
+  integrity sha512-rlrc3yU3+JNOpZ9zj5pQtxnx2THmvRykwL4Xlxoa8I9lHBlVbbyPhgyPMioxVZ4NqyxaVVtaJnzsyOidQIhyyQ==
+
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -3800,12 +3805,12 @@ neo-async@^2.6.0:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.0.tgz#b9d15e4d71c6762908654b5183ed38b753340835"
   integrity sha512-MFh0d/Wa7vkKO3Y3LlacqAEeHK0mckVqzDieUKTT+KGxi+zIpeVsFxymkIiRpbpDziHc290Xr9A1O4Om7otoRA==
 
-nextbone@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/nextbone/-/nextbone-0.12.0.tgz#9d579261f3281b4bf3b9d860cd5836d538c36198"
-  integrity sha512-1oNS/sNheuyDhK2I2DiEoa2qSrHEVlvRwWSyy16oxiD10h4YpYC+wGcpI8uZNjbo01yZDLtR+PZ6hjbDDB9n9w==
+nextbone@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/nextbone/-/nextbone-0.20.0.tgz#832d322d40a340b146b7c28db1011eb048d42da8"
+  integrity sha512-+cW8z8wUg85rE24XzjoThA+aZWRBeniMklPaMO4Hovy1tZOJueJHznBW/r1MlXcH1GMyMP10dG7xzPkekHuMkA==
   dependencies:
-    underscore ">=1.8.3"
+    lodash-es "^4.17.15"
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -5210,10 +5215,6 @@ uglify-js@^3.1.4:
   dependencies:
     commander "~2.17.1"
     source-map "~0.6.1"
-
-underscore@>=1.8.3, underscore@~1.9.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"

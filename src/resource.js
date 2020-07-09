@@ -1,5 +1,5 @@
 import { Model, Collection } from 'nextbone'
-import { extend } from 'underscore'
+import { extend } from 'lodash-es'
 import pathToRegexp from 'path-to-regexp-es'
 
 function getResourcePath(resourceDef, params = {}, resourceId) {
