@@ -1,10 +1,4 @@
-import {
-  createResourceSync,
-  paramsMixin,
-  ResourceModel,
-  ResourceCollection,
-  resource,
-} from './resource'
+import { createResourceSync, ResourceModel, ResourceCollection, resource } from './resource'
 import Storage from './storage'
 
-export { createResourceSync, paramsMixin, ResourceCollection, ResourceModel, Storage, resource }
+export { createResourceSync, ResourceCollection, ResourceModel, Storage, resource }
