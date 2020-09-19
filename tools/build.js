@@ -18,17 +18,28 @@ const formats = ['es']
 
 // Compile source code into a distributable format with Babel
 formats.forEach((format) => {
-  promise = promise.then(() => rollup.rollup({
-    input: 'src/index.js',
-    external: Object.keys(dependencies),
-    plugins: [babel({
-      exclude: 'node_modules/**'
-    })]
-  }).then(bundle => bundle.write({
-    file: `dist/${outputName}.js`,
-    format,
-    sourcemap: true
-  })))
+  promise = promise.then(() =>
+    rollup
+      .rollup({
+        input: 'src/index.js',
+        external: Object.keys(dependencies),
+        plugins: [
+          babel({
+            exclude: 'node_modules/**',
+          }),
+        ],
+      })
+      .then((bundle) =>
+        bundle.write({
+          file: `dist/${outputName}.js`,
+          format,
+          sourcemap: true,
+        })
+      )
+  )
 })
 
-promise.catch(err => console.error(err.stack)) // eslint-disable-line no-console
+promise.catch((err) => {
+  console.error(err.stack) // eslint-disable-line no-console
+  process.exit(1)
+})
