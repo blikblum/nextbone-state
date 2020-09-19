@@ -1,9 +1,9 @@
 import { Model, Collection } from 'nextbone'
 import { extend } from 'lodash-es'
-import pathToRegexp from 'path-to-regexp-es'
+import { compile } from 'path-to-regexp'
 
 function getResourcePath(resourceDef, params = {}, resourceId) {
-  const toPath = pathToRegexp.compile(resourceDef.path)
+  const toPath = compile(resourceDef.path)
   let query = ''
   if (resourceDef.params) {
     resourceDef.params.forEach(paramDef => {

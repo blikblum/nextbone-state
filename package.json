@@ -45,7 +45,7 @@
     "nextbone": "^0.20.0"
   },
   "dependencies": {
-    "path-to-regexp-es": "^3.0.0"
+    "path-to-regexp": "^5.0.0"
   },
   "jest": {
     "modulePathIgnorePatterns": [
