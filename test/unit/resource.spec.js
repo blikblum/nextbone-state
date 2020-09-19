@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { createResourceSync } from '../../src/index'
+import { createResourceSync, ResourceCollection, ResourceModel } from '../../src/index'
 import { Model, Collection } from 'nextbone'
 
 const resourceDefs = [
@@ -280,5 +280,46 @@ describe('createResourceSync', () => {
         expect(originalSyncSpy).toBeCalledWith('update', model, { url: expectedUrl })
       }
     )
+  })
+})
+
+
+describe('ResourceModel', () => {
+  it('should have a params property', () => {
+    const model = new ResourceModel()    
+    expect(model.params).toBeInstanceOf(Object)
+  })
+  
+  it('should have setParam method', () => {
+    const model = new ResourceModel()    
+    model.setParam('test', 'x')
+    expect(model.params.test).toBe('x')
+  })
+
+  it('should have clearParams method', () => {
+    const model = new ResourceModel()    
+    model.setParam('test', 'x')
+    model.clearParams()
+    expect(model.params).toEqual({})
+  })
+})
+
+describe('ResourceCollection', () => {
+  it('should have a params property', () => {
+    const model = new ResourceCollection()    
+    expect(model.params).toBeInstanceOf(Object)
+  })
+  
+  it('should have setParam method', () => {
+    const model = new ResourceCollection()    
+    model.setParam('test', 'x')
+    expect(model.params.test).toBe('x')
+  })
+
+  it('should have clearParams method', () => {
+    const model = new ResourceCollection()    
+    model.setParam('test', 'x')
+    model.clearParams()
+    expect(model.params).toEqual({})
   })
 })

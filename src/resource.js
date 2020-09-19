@@ -74,6 +74,23 @@ export function createResourceSync(originalSync) {
   }
 }
 
+export const withParams = (BaseClass) => {
+  return class extends BaseClass {
+    constructor(...args) {
+      super(...args)
+      this.params = {}
+    }
+
+    clearParams() {
+      this.params = {}
+    }
+  
+    setParam(name, value) {
+      this.params[name] = value
+    }
+  }  
+}
+
 export const paramsMixin = {
   clearParams() {
     this.params && (this.params = {})
@@ -85,9 +102,7 @@ export const paramsMixin = {
   }
 }
 
-class ResourceModel extends Model {}
-class ResourceCollection extends Collection {}
-Object.assign(ResourceModel.prototype, paramsMixin)
-Object.assign(ResourceCollection.prototype, paramsMixin)
+class ResourceModel extends withParams(Model) {}
+class ResourceCollection extends withParams(Collection) {}
 
 export { ResourceModel, ResourceCollection }
