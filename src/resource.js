@@ -99,4 +99,27 @@ export const withParams = (BaseClass) => {
 class ResourceModel extends withParams(Model) {}
 class ResourceCollection extends withParams(Collection) {}
 
-export { ResourceModel, ResourceCollection }
+const createResourceClass = (name, BaseClass) => {
+  const ResourceClass = class extends withParams(BaseClass) {}
+  ResourceClass.resource = name
+  Object.defineProperty(ResourceClass, 'name', {value: BaseClass.name, configurable: true})  
+  return ResourceClass
+}
+
+// ES class resource mixin / decorator
+const resource = name => classOrDescriptor => {
+  if (typeof classOrDescriptor === 'object') {
+    const { kind, elements } = classOrDescriptor;
+    return {
+      kind,
+      elements,
+      finisher(BaseClass) {
+        return createResourceClass(name, BaseClass)
+      }
+    };
+  }  
+  return createResourceClass(name, classOrDescriptor);
+};
+
+
+export { ResourceModel, ResourceCollection, resource }

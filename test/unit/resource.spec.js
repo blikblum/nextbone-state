@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { createResourceSync, ResourceCollection, ResourceModel } from '../../src/index'
 import { Model, Collection, Events } from 'nextbone'
-import { withParams } from '../../src/resource.js'
+import { resource, withParams } from '../../src/resource.js'
 
 const resourceDefs = [
   {
@@ -366,5 +366,29 @@ describe('ResourceCollection', () => {
     model.setParam('test', 'x')
     model.clearParams()
     expect(model.params).toEqual({})
+  })
+})
+
+describe('resource decorator', () => {
+  it('should define resource static property', () => {
+    @resource('test')
+    class MyClass extends Model {}    
+    expect(MyClass.resource).toBe('test')
+  })
+
+  it('should extends from withParams', () => {
+    @resource('test')
+    class MyClass extends Model {} 
+    const model = new MyClass()    
+    model.setParam('test', 'x')
+    expect(model.params.test).toBe('x')
+    model.clearParams()
+    expect(model.params).toEqual({})    
+  })
+
+  it('should keep original class name', () => {
+    @resource('test')
+    class MyClass extends Model {}    
+    expect(MyClass.name).toBe('MyClass')
   })
 })
