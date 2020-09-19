@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import { createResourceSync, ResourceCollection, ResourceModel } from '../../src/index'
-import { Model, Collection } from 'nextbone'
+import { Model, Collection, Events } from 'nextbone'
+import { withParams } from '../../src/resource.js'
 
 const resourceDefs = [
   {
@@ -280,6 +281,50 @@ describe('createResourceSync', () => {
         expect(originalSyncSpy).toBeCalledWith('update', model, { url: expectedUrl })
       }
     )
+  })
+})
+
+describe('withParams', () => {
+  let TestClass
+  beforeEach(() => {
+    TestClass = class extends withParams(Events) {}
+  })
+  it('should define a params property', () => {
+    const model = new TestClass()    
+    expect(model.params).toBeInstanceOf(Object)
+  })
+  
+  it('should define a setParam method', () => {
+    const model = new TestClass()    
+    model.setParam('test', 'x')
+    expect(model.params.test).toBe('x')
+  })
+
+  it('#setParam should trigger paramChange and paramChange:[name] events', () => {
+    const model = new TestClass()
+    const spyChange = jest.fn()
+    const spyChangeTest = jest.fn()
+    model.on('paramChange', spyChange)
+    model.on('paramChange:test', spyChangeTest)
+    model.setParam('test', 'x')
+    expect(spyChange).toBeCalledWith(model, 'test')
+    expect(spyChangeTest).toBeCalledWith(model, 'x', undefined)
+  })
+
+  it('should define a clearParams method', () => {
+    const model = new TestClass()    
+    model.setParam('test', 'x')
+    model.clearParams()
+    expect(model.params).toEqual({})
+  })
+
+  it('#clearParams should trigger paramChange event', () => {
+    const model = new TestClass()
+    const spyChange = jest.fn()    
+    model.setParam('test', 'x')
+    model.on('paramChange', spyChange)
+    model.clearParams()
+    expect(spyChange).toBeCalledWith(model, '*')    
   })
 })
 

@@ -83,23 +83,17 @@ export const withParams = (BaseClass) => {
 
     clearParams() {
       this.params = {}
+      this.trigger('paramChange', this, '*');
     }
   
     setParam(name, value) {
-      this.params[name] = value
+      const oldValue = this.params[name];            
+      if (value === oldValue) return;
+      this.params[name] = value      
+      this.trigger(`paramChange:${name}`, this, value, oldValue);
+      this.trigger('paramChange', this, name);
     }
   }  
-}
-
-export const paramsMixin = {
-  clearParams() {
-    this.params && (this.params = {})
-  },
-
-  setParam(name, value) {
-    this.params || (this.params = {})
-    this.params[name] = value
-  }
 }
 
 class ResourceModel extends withParams(Model) {}
