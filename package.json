@@ -8,7 +8,9 @@
   "scripts": {
     "test": "jest",
     "build": "node tools/build",
-    "prepublishOnly": "npm run build"
+    "format": "prettier src/**/*.js test/**/*.js --write",
+    "lint": "eslint src/**/*.js test/**/*.js",
+    "prepublishOnly": "npm run lint && npm run build"
   },
   "repository": {
     "type": "git",
@@ -32,11 +34,14 @@
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-decorators": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^26.1.0",
     "del": "^5.1.0",
+    "eslint": "^7.9.0",
     "jest": "^26.1.0",
     "lodash-es": "^4.17.15",
     "nextbone": "^0.20.0",
+    "prettier": "^2.1.2",
     "rollup": "^2.21.0",
     "rollup-plugin-babel": "^4.4.0",
     "standard": "^14.3.4"

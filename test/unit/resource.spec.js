@@ -10,9 +10,9 @@ const resourceDefs = [
     params: [
       {
         name: 'registry',
-        location: 'query'
-      }
-    ]
+        location: 'query',
+      },
+    ],
   },
   {
     name: 'patientbyregistry',
@@ -21,54 +21,54 @@ const resourceDefs = [
       {
         name: 'registry',
         location: 'query',
-        required: true
+        required: true,
       },
       {
         name: 'name',
-        location: 'query'
-      }
-    ]
+        location: 'query',
+      },
+    ],
   },
   {
     name: 'patientaccompaniment',
     path: 'patients/:patientid/accompaniments',
     params: [
       {
-        name: 'patientid'
-      }
-    ]
+        name: 'patientid',
+      },
+    ],
   },
   {
     name: 'accompanimentdata',
     path: 'patients/:patientid/accompanimentdata',
     params: [
       {
-        name: 'patientid'
-      }
+        name: 'patientid',
+      },
     ],
-    idAttribute: ''
+    idAttribute: '',
   },
   {
     name: 'patientevaluation',
     path: 'patients/:patientid/evaluations',
     params: [
       {
-        name: 'patientid'
-      }
+        name: 'patientid',
+      },
     ],
-    idAttribute: 'date'
+    idAttribute: 'date',
   },
   {
     name: 'crdpatient',
-    path: 'patients/crd'
-  }
+    path: 'patients/crd',
+  },
 ]
 
 const baseUrl = 'http://base/'
 
 const resourceClient = {
   baseUrl: baseUrl,
-  resourceDefs: resourceDefs
+  resourceDefs: resourceDefs,
 }
 
 describe('createResourceSync', () => {
@@ -290,12 +290,12 @@ describe('withParams', () => {
     TestClass = class extends withParams(Events) {}
   })
   it('should define a params property', () => {
-    const model = new TestClass()    
+    const model = new TestClass()
     expect(model.params).toBeInstanceOf(Object)
   })
-  
+
   it('should define a setParam method', () => {
-    const model = new TestClass()    
+    const model = new TestClass()
     model.setParam('test', 'x')
     expect(model.params.test).toBe('x')
   })
@@ -312,7 +312,7 @@ describe('withParams', () => {
   })
 
   it('should define a clearParams method', () => {
-    const model = new TestClass()    
+    const model = new TestClass()
     model.setParam('test', 'x')
     model.clearParams()
     expect(model.params).toEqual({})
@@ -320,29 +320,28 @@ describe('withParams', () => {
 
   it('#clearParams should trigger paramChange event', () => {
     const model = new TestClass()
-    const spyChange = jest.fn()    
+    const spyChange = jest.fn()
     model.setParam('test', 'x')
     model.on('paramChange', spyChange)
     model.clearParams()
-    expect(spyChange).toBeCalledWith(model, '*')    
+    expect(spyChange).toBeCalledWith(model, '*')
   })
 })
 
-
 describe('ResourceModel', () => {
   it('should have a params property', () => {
-    const model = new ResourceModel()    
+    const model = new ResourceModel()
     expect(model.params).toBeInstanceOf(Object)
   })
-  
+
   it('should have setParam method', () => {
-    const model = new ResourceModel()    
+    const model = new ResourceModel()
     model.setParam('test', 'x')
     expect(model.params.test).toBe('x')
   })
 
   it('should have clearParams method', () => {
-    const model = new ResourceModel()    
+    const model = new ResourceModel()
     model.setParam('test', 'x')
     model.clearParams()
     expect(model.params).toEqual({})
@@ -351,18 +350,18 @@ describe('ResourceModel', () => {
 
 describe('ResourceCollection', () => {
   it('should have a params property', () => {
-    const model = new ResourceCollection()    
+    const model = new ResourceCollection()
     expect(model.params).toBeInstanceOf(Object)
   })
-  
+
   it('should have setParam method', () => {
-    const model = new ResourceCollection()    
+    const model = new ResourceCollection()
     model.setParam('test', 'x')
     expect(model.params.test).toBe('x')
   })
 
   it('should have clearParams method', () => {
-    const model = new ResourceCollection()    
+    const model = new ResourceCollection()
     model.setParam('test', 'x')
     model.clearParams()
     expect(model.params).toEqual({})
@@ -372,23 +371,23 @@ describe('ResourceCollection', () => {
 describe('resource decorator', () => {
   it('should define resource static property', () => {
     @resource('test')
-    class MyClass extends Model {}    
+    class MyClass extends Model {}
     expect(MyClass.resource).toBe('test')
   })
 
   it('should extends from withParams', () => {
     @resource('test')
-    class MyClass extends Model {} 
-    const model = new MyClass()    
+    class MyClass extends Model {}
+    const model = new MyClass()
     model.setParam('test', 'x')
     expect(model.params.test).toBe('x')
     model.clearParams()
-    expect(model.params).toEqual({})    
+    expect(model.params).toEqual({})
   })
 
   it('should keep original class name', () => {
     @resource('test')
-    class MyClass extends Model {}    
+    class MyClass extends Model {}
     expect(MyClass.name).toBe('MyClass')
   })
 })

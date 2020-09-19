@@ -6,7 +6,7 @@ function getResourcePath(resourceDef, params = {}, resourceId) {
   const toPath = compile(resourceDef.path)
   let query = ''
   if (resourceDef.params) {
-    resourceDef.params.forEach(paramDef => {
+    resourceDef.params.forEach((paramDef) => {
       const paramValue = params[paramDef.name]
       const isQuery = paramDef.location === 'query'
       const isRequired =
@@ -32,7 +32,7 @@ function getResourcePath(resourceDef, params = {}, resourceId) {
 }
 
 function findResourceDef(client, resource) {
-  const result = client.resourceDefs.find(def => def.name === resource)
+  const result = client.resourceDefs.find((def) => def.name === resource)
   if (!result) {
     throw new Error(`Unable to find resource definition for ${resource}`)
   }
@@ -83,17 +83,17 @@ export const withParams = (BaseClass) => {
 
     clearParams() {
       this.params = {}
-      this.trigger('paramChange', this, '*');
+      this.trigger('paramChange', this, '*')
     }
-  
+
     setParam(name, value) {
-      const oldValue = this.params[name];            
-      if (value === oldValue) return;
-      this.params[name] = value      
-      this.trigger(`paramChange:${name}`, this, value, oldValue);
-      this.trigger('paramChange', this, name);
+      const oldValue = this.params[name]
+      if (value === oldValue) return
+      this.params[name] = value
+      this.trigger(`paramChange:${name}`, this, value, oldValue)
+      this.trigger('paramChange', this, name)
     }
-  }  
+  }
 }
 
 class ResourceModel extends withParams(Model) {}
@@ -102,24 +102,23 @@ class ResourceCollection extends withParams(Collection) {}
 const createResourceClass = (name, BaseClass) => {
   const ResourceClass = class extends withParams(BaseClass) {}
   ResourceClass.resource = name
-  Object.defineProperty(ResourceClass, 'name', {value: BaseClass.name, configurable: true})  
+  Object.defineProperty(ResourceClass, 'name', { value: BaseClass.name, configurable: true })
   return ResourceClass
 }
 
 // ES class resource mixin / decorator
-const resource = name => classOrDescriptor => {
+const resource = (name) => (classOrDescriptor) => {
   if (typeof classOrDescriptor === 'object') {
-    const { kind, elements } = classOrDescriptor;
+    const { kind, elements } = classOrDescriptor
     return {
       kind,
       elements,
       finisher(BaseClass) {
         return createResourceClass(name, BaseClass)
-      }
-    };
-  }  
-  return createResourceClass(name, classOrDescriptor);
-};
-
+      },
+    }
+  }
+  return createResourceClass(name, classOrDescriptor)
+}
 
 export { ResourceModel, ResourceCollection, resource }
